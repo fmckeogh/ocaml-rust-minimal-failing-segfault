@@ -9,10 +9,8 @@ use {
     parking_lot::Mutex,
 };
 
-pub mod ast;
 pub mod error;
 pub mod parser;
-pub mod span;
 
 /// OCaml runtime handle, initialised on first access
 ///
