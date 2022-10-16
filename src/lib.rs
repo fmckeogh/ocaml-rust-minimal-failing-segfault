@@ -3,13 +3,11 @@
 //! Rust interface to `Sail` compiler library
 
 use {
-    crate::error::Error,
     ocaml::{List, Runtime, ToValue, Value},
     once_cell::sync::Lazy,
     parking_lot::Mutex,
 };
 
-pub mod error;
 pub mod parser;
 
 /// OCaml runtime handle, initialised on first access
@@ -25,7 +23,7 @@ ocaml::import! {
 }
 
 /// Removes duplicate values in the supplied Vec
-pub fn dedup(list: Vec<i32>) -> Result<Vec<i32>, Error> {
+pub fn dedup(list: Vec<i32>) -> Vec<i32> {
     Lazy::force(&RT);
 
     let mut l = List::empty();
@@ -35,7 +33,9 @@ pub fn dedup(list: Vec<i32>) -> Result<Vec<i32>, Error> {
         l = unsafe { l.add(&*rt, &element.to_value(&*rt)) };
     }
 
-    Ok(unsafe { internal_util_dedup(&*RT.lock(), l) }?.into_vec())
+    unsafe { internal_util_dedup(&*RT.lock(), l) }
+        .unwrap()
+        .into_vec()
 }
 
 #[cfg(test)]
@@ -55,7 +55,7 @@ mod tests {
             v_d.sort();
             v_d.dedup();
 
-            let mut out = dedup(v).unwrap();
+            let mut out = dedup(v);
             out.sort();
             assert_eq!(out, v_d);
         }

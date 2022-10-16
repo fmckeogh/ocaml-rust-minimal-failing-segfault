@@ -1,7 +1,7 @@
 //! Sail source file parsing
 
 use {
-    crate::{error::Error, RT},
+    crate::RT,
     ocaml::{
         interop::{BoxRoot, ToOCaml},
         List, Value,
@@ -42,10 +42,10 @@ ocaml::import! {
 ///
 /// After type-checking the Sail scattered definitions are de-scattered
 /// into single functions.
-pub fn load_files(files: Vec<String>) -> Result<(), Error> {
+pub fn load_files(files: Vec<String>) {
     Lazy::force(&RT);
 
-    let env = unsafe { internal_type_check_initial_env(&*RT.lock())? };
+    let env = unsafe { internal_type_check_initial_env(&*RT.lock()).unwrap() };
 
     let mut file_list = List::empty();
 
@@ -55,12 +55,10 @@ pub fn load_files(files: Vec<String>) -> Result<(), Error> {
     }
 
     let (output_name, ast, type_envs) = unsafe {
-        internal_process_file_load_files(&*RT.lock(), false, List::empty(), env, file_list)?
+        internal_process_file_load_files(&*RT.lock(), false, List::empty(), env, file_list).unwrap()
     };
 
     dbg!((output_name, ast, type_envs));
-
-    Ok(())
 }
 
 #[cfg(test)]
@@ -72,7 +70,7 @@ mod tests {
 
     #[test]
     fn load_files_empty() {
-        load_files(vec![]).unwrap();
+        load_files(vec![]);
     }
 
     #[test]
@@ -82,6 +80,6 @@ mod tests {
             .to_string_lossy()
             .to_string();
 
-        load_files(vec![path.clone()]).unwrap();
+        load_files(vec![path.clone()]);
     }
 }
