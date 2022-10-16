@@ -38,72 +38,17 @@ pub fn dedup(list: Vec<i32>) -> Vec<i32> {
 
 #[cfg(test)]
 mod tests {
-    use {
-        crate::dedup,
-        proptest::{bits, collection::vec, prelude::*},
-    };
+    use crate::dedup;
 
-    proptest! {
-        /// Checks equivalence between libsail dedup function and Rust stdlib dedup.
-        ///
-        /// Used as smoke test that OCaml interop is functioning correctly (intentionally doing a lot of allocating, many function calls, etc).
-        #[test]
-        fn smoke_test0(v in vec(bits::i32::ANY, 0..10000)) {
-            let mut v_d = v.clone();
-            v_d.sort();
-            v_d.dedup();
-
-            let mut out = dedup(v);
-            out.sort();
-            assert_eq!(out, v_d);
+    #[test]
+    fn fail() {
+        for _ in 0..10 {
+            std::thread::spawn(|| loop {
+                let i = vec![-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
+                let o = dedup(i.clone());
+                assert_eq!(i, o);
+            });
         }
-    }
-
-    proptest! {
-        /// Checks equivalence between libsail dedup function and Rust stdlib dedup.
-        ///
-        /// Used as smoke test that OCaml interop is functioning correctly (intentionally doing a lot of allocating, many function calls, etc).
-        #[test]
-        fn smoke_test1(v in vec(bits::i32::ANY, 0..10000)) {
-            let mut v_d = v.clone();
-            v_d.sort();
-            v_d.dedup();
-
-            let mut out = dedup(v);
-            out.sort();
-            assert_eq!(out, v_d);
-        }
-    }
-
-    proptest! {
-        /// Checks equivalence between libsail dedup function and Rust stdlib dedup.
-        ///
-        /// Used as smoke test that OCaml interop is functioning correctly (intentionally doing a lot of allocating, many function calls, etc).
-        #[test]
-        fn smoke_test2(v in vec(bits::i32::ANY, 0..10000)) {
-            let mut v_d = v.clone();
-            v_d.sort();
-            v_d.dedup();
-
-            let mut out = dedup(v);
-            out.sort();
-            assert_eq!(out, v_d);
-        }
-    }
-
-    proptest! {
-        /// Checks equivalence between libsail dedup function and Rust stdlib dedup.
-        ///
-        /// Used as smoke test that OCaml interop is functioning correctly (intentionally doing a lot of allocating, many function calls, etc).
-        #[test]
-        fn smoke_test3(v in vec(bits::i32::ANY, 0..10000)) {
-            let mut v_d = v.clone();
-            v_d.sort();
-            v_d.dedup();
-
-            let mut out = dedup(v);
-            out.sort();
-            assert_eq!(out, v_d);
-        }
+        loop {}
     }
 }
