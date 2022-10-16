@@ -8,8 +8,6 @@ use {
     parking_lot::Mutex,
 };
 
-pub mod parser;
-
 /// OCaml runtime handle, initialised on first access
 ///
 /// *Every* function referencing RT must either begin with RT.write() or it will possibly not be
@@ -50,7 +48,55 @@ mod tests {
         ///
         /// Used as smoke test that OCaml interop is functioning correctly (intentionally doing a lot of allocating, many function calls, etc).
         #[test]
-        fn smoke_test(v in vec(bits::i32::ANY, 0..10000)) {
+        fn smoke_test0(v in vec(bits::i32::ANY, 0..10000)) {
+            let mut v_d = v.clone();
+            v_d.sort();
+            v_d.dedup();
+
+            let mut out = dedup(v);
+            out.sort();
+            assert_eq!(out, v_d);
+        }
+    }
+
+    proptest! {
+        /// Checks equivalence between libsail dedup function and Rust stdlib dedup.
+        ///
+        /// Used as smoke test that OCaml interop is functioning correctly (intentionally doing a lot of allocating, many function calls, etc).
+        #[test]
+        fn smoke_test1(v in vec(bits::i32::ANY, 0..10000)) {
+            let mut v_d = v.clone();
+            v_d.sort();
+            v_d.dedup();
+
+            let mut out = dedup(v);
+            out.sort();
+            assert_eq!(out, v_d);
+        }
+    }
+
+    proptest! {
+        /// Checks equivalence between libsail dedup function and Rust stdlib dedup.
+        ///
+        /// Used as smoke test that OCaml interop is functioning correctly (intentionally doing a lot of allocating, many function calls, etc).
+        #[test]
+        fn smoke_test2(v in vec(bits::i32::ANY, 0..10000)) {
+            let mut v_d = v.clone();
+            v_d.sort();
+            v_d.dedup();
+
+            let mut out = dedup(v);
+            out.sort();
+            assert_eq!(out, v_d);
+        }
+    }
+
+    proptest! {
+        /// Checks equivalence between libsail dedup function and Rust stdlib dedup.
+        ///
+        /// Used as smoke test that OCaml interop is functioning correctly (intentionally doing a lot of allocating, many function calls, etc).
+        #[test]
+        fn smoke_test3(v in vec(bits::i32::ANY, 0..10000)) {
             let mut v_d = v.clone();
             v_d.sort();
             v_d.dedup();

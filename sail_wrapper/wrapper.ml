@@ -1,8 +1,12 @@
-let () =
-  Callback.register "internal_util_dedup" Util.remove_duplicates;
+let remove_duplicates l =
+  let l' = List.sort Stdlib.compare l in
+  let rec aux acc l =
+    match (acc, l) with
+    | _, [] -> List.rev acc
+    | [], x :: xs -> aux [ x ] xs
+    | y :: ys, x :: xs ->
+        if x = y then aux (y :: ys) xs else aux (x :: y :: ys) xs
+  in
+  aux [] l'
 
-  Callback.register "internal_process_file_load_files" (fun a b c d ->
-      Process_file.load_files ?check:a b c d);
-
-  Callback.register "internal_type_check_initial_env" (fun () ->
-      Type_check.initial_env)
+let () = Callback.register "internal_util_dedup" remove_duplicates
